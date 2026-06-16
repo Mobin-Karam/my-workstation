@@ -16,6 +16,18 @@ A modern, reusable contact form system built with **Next.js**, **Zod validation*
 
 ---
 
+## Env
+
+- also for connection use this env example :
+
+```env
+BALE_BOT_TOKEN=******
+BALE_PROVIDER_TOKEN=******
+
+BALE_CHANNEL=*****
+BALE_CHAT_ID=*****
+```
+
 ## 📦 Installation
 
 Clone the project:
@@ -24,3 +36,4 @@ Clone the project:
 git clone https://github.com/yourname/contact-form
 cd contact-form
 npm install
+```
