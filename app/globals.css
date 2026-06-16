@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------- FONT ---------------- */
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("/fonts/Vazirmatn/static/Vazirmatn-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("/fonts/Vazirmatn/static/Vazirmatn-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------------- DESIGN TOKENS (TAILWIND v4 WAY) ---------------- */
+@theme {
+  --color-bg: #f6f6f6;
+  --color-card: #ffffff;
+  --color-text: #0a0a0a;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-primary: #111111;
+
+  --color-success: #16a34a;
+  --color-error: #ef4444;
+
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+}
+
+/* ---------------- BASE STYLES ---------------- */
+@layer base {
+  body {
+    font-family: "Vazirmatn", sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
