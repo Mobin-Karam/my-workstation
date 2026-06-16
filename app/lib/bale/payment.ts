@@ -1,6 +1,5 @@
 import { CHANNEL, PROVIDER_TOKEN } from "./config";
 
-
 const TOKEN = process.env.BALE_BOT_TOKEN!;
 
 export async function sendInvoice({
@@ -26,11 +25,13 @@ export async function sendInvoice({
         title,
         description,
         payload,
+
         provider_token: PROVIDER_TOKEN,
+
         prices: [
           {
-            label: title,
-            amount,
+            label: "Donation",
+            amount: Math.floor(amount),
           },
         ],
       }),
@@ -39,7 +40,10 @@ export async function sendInvoice({
 
   const data = await res.json();
 
-  if (!data.ok) throw new Error("Invoice failed");
+  if (!data.ok) {
+    console.error("Invoice error:", data);
+    throw new Error("Invoice failed");
+  }
 
   return data;
 }

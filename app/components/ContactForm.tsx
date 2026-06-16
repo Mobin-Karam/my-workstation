@@ -1,8 +1,8 @@
 "use client";
 
-import { appEventBus } from "@/lib/appEventBus";
 import { useState } from "react";
 import { z } from "zod";
+import { appEventBus } from "@/lib/appEventBus";
 
 /* ---------------- VALIDATION ---------------- */
 const schema = z.object({
@@ -53,6 +53,8 @@ export default function ContactForm() {
   const canSubmit =
     form.name.trim().length >= 2 && form.message.trim().length >= 5 && !loading;
 
+  const canPay = !!sessionId && donation >= 10000 && !payLoading;
+
   /* ---------------- SUBMIT ---------------- */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,31 +65,43 @@ export default function ContactForm() {
     try {
       const res = await fetch("/api/lead", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           ...form,
           donation,
         }),
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
 
       const data = await res.json();
 
       if (data.success) {
         setSessionId(data.sessionId);
-        setForm({ name: "", phone: "", email: "", message: "" });
-        setDonation(0);
+
+        setForm({
+          name: "",
+          phone: "",
+          email: "",
+          message: "",
+        });
+
+        appEventBus.emit("پیام با موفقیت ارسال شد", "success");
       }
     } finally {
       setLoading(false);
     }
   }
 
-  /* ---------------- PAYMENT ---------------- */
+  /* ---------------- PAYMENT (FIXED) ---------------- */
   async function payDonation() {
     if (!sessionId) {
-      appEventBus.emit("اول پیام را ارسال کنید", "info");
+      appEventBus.emit("ابتدا پیام را ارسال کنید", "info");
+      return;
+    }
+
+    if (donation < 10000) {
+      appEventBus.emit("حداقل مبلغ 10000 است", "error");
       return;
     }
 
@@ -99,17 +113,19 @@ export default function ContactForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
-          email: form.email,
+          email: form.email || "",
           amount: donation,
           sessionId,
         }),
       });
 
       const data = await res.json();
-      data.success
-        ? appEventBus.emit("پرداخت ایجاد شد", "success")
-        : appEventBus.emit("خطا در پرداخت", "error");
 
+      if (data.success) {
+        appEventBus.emit("فاکتور پرداخت ساخته شد", "success");
+      } else {
+        appEventBus.emit("خطا در پرداخت", "error");
+      }
     } finally {
       setPayLoading(false);
     }
@@ -127,21 +143,20 @@ export default function ContactForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* NAME (required) */}
+          {/* NAME */}
           <input
             placeholder="نام *"
             autoComplete="name"
-            className="w-full p-3 rounded-xl border border-border focus:border-primary outline-none"
+            className="w-full p-3 rounded-xl border border-border"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           {errors.name && <p className="text-xs text-error">{errors.name}</p>}
 
-          {/* MESSAGE (required) */}
+          {/* MESSAGE */}
           <textarea
             placeholder="پیام *"
-            autoComplete="off"
-            className="w-full p-3 rounded-xl border border-border focus:border-primary outline-none"
+            className="w-full p-3 rounded-xl border border-border"
             value={form.message}
             onChange={(e) => setForm({ ...form, message: e.target.value })}
           />
@@ -149,50 +164,48 @@ export default function ContactForm() {
             <p className="text-xs text-error">{errors.message}</p>
           )}
 
-          {/* OPTIONAL FIELDS */}
+          {/* OPTIONAL */}
           <input
-            placeholder="تلفن (اختیاری)"
-            autoComplete="tel"
+            placeholder="تلفن"
             className="w-full p-3 rounded-xl border border-border"
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
 
           <input
-            placeholder="ایمیل (اختیاری)"
-            autoComplete="email"
+            placeholder="ایمیل"
             className="w-full p-3 rounded-xl border border-border"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
 
           {/* DONATION */}
-          {/* <input
+          <input
             type="number"
-            placeholder="حمایت مالی (اختیاری)"
+            placeholder="حمایت مالی (حداقل 10000)"
             className="w-full p-3 rounded-xl border border-border"
             value={donation}
             onChange={(e) => setDonation(Number(e.target.value))}
-          /> */}
+          />
 
-          {/* PAYMENT BUTTON */}
-          {/* <button
+          {/* PAYMENT */}
+          <button
             type="button"
             onClick={payDonation}
-            disabled={payLoading}
-            className="w-full bg-success text-white py-3 rounded-xl font-medium"
+            disabled={!canPay}
+            className={`w-full py-3 rounded-xl font-medium ${
+              canPay ? "bg-success text-white" : "bg-gray-300 text-gray-500"
+            }`}
           >
             {payLoading ? "در حال پردازش..." : "پرداخت / حمایت مالی"}
-          </button> */}
+          </button>
 
-          {/* SUBMIT BUTTON (DISABLED LOGIC FIXED) */}
+          {/* SUBMIT */}
           <button
             type="submit"
             disabled={!canSubmit}
-            className={`w-full py-3 rounded-xl font-medium transition ${
-              canSubmit
-                ? "bg-primary text-white hover:opacity-90"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            className={`w-full py-3 rounded-xl font-medium ${
+              canSubmit ? "bg-primary text-white" : "bg-gray-300 text-gray-500"
             }`}
           >
             {loading ? "در حال ارسال..." : "ارسال پیام"}

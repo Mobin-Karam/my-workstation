@@ -3,27 +3,25 @@ import { sendInvoice } from "@/lib/bale/payment";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const { name, email, amount, sessionId } = await req.json();
 
-    const { name, email, amount, sessionId } = body;
-
-    if (!name || !email || !amount) {
+    if (!name || !amount || !sessionId) {
       return NextResponse.json(
-        { success: false },
-        { status: 400 }
+        { success: false, error: "Invalid data" },
+        { status: 400 },
       );
     }
 
     if (amount < 10000) {
       return NextResponse.json(
         { success: false, error: "Min 10000" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const payload = JSON.stringify({
       sessionId,
-      email,
+      email: email || "",
       type: "donation",
     });
 
@@ -41,8 +39,8 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     return NextResponse.json(
-      { success: false },
-      { status: 500 }
+      { success: false, error: "Payment error" },
+      { status: 500 },
     );
   }
 }
