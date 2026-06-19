@@ -8,11 +8,18 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const { name, email = "", phone = "", message, donation = 0 } = body;
+    const {
+      name,
+      email = "",
+      phone = "",
+      message,
+      productTitle = null,
+      brand = "",
+    } = body;
 
-    if (!name || !message) {
+    if (!name || !phone) {
       return NextResponse.json(
-        { success: false, error: "Name and message required" },
+        { success: false, error: "Name and phone required" },
         { status: 400 },
       );
     }
@@ -20,14 +27,15 @@ export async function POST(req: Request) {
     const sessionId = createSessionId();
 
     const caption = `
-📥 New Lead
+📥 درخواست جدید
 🆔 ${sessionId}
 
 👤 ${name}
+🏪 پیج/فروشگاه: ${brand || "-"}
+📦 خدمت: ${productTitle || "-"}
+📱 ${phone}
 📧 ${email || "-"}
-📱 ${phone || "-"}
-💬 ${message}
-💰 ${donation || 0}
+💬 ${message || "-"}
 `;
 
     // send to Bale
@@ -51,7 +59,7 @@ export async function POST(req: Request) {
       success: true,
       sessionId,
     });
-  } catch (e) {
+  } catch {
     return NextResponse.json(
       { success: false, error: "Server error" },
       { status: 500 },
