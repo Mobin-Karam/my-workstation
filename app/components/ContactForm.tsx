@@ -38,7 +38,6 @@ export default function ContactForm({
 
   const selectedProduct = getProductById(selectedProductId);
 
-  /* ---------------- VALIDATION ---------------- */
   function validate() {
     const res = schema.safeParse(form);
 
@@ -62,7 +61,6 @@ export default function ContactForm({
     form.phone.trim().length >= 8 &&
     !loading;
 
-  /* ---------------- SUBMIT ---------------- */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
@@ -113,41 +111,44 @@ export default function ContactForm({
 
   return (
     <div className="max-w-xl mx-auto">
-      <div className="bg-card text-text rounded-2xl shadow-xl border border-border p-6 sm:p-8">
+      <div className="bg-surface text-text rounded-2xl shadow-md border border-border p-6 sm:p-8">
         {/* HEADER */}
         <div className="text-center mb-6">
-          <h2 className="text-xl sm:text-2xl font-bold">تکمیل درخواست</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">
+            تکمیل درخواست
+          </h2>
           <p className="text-sm text-muted mt-1">
             پاسخ سریع در کمتر از ۲۴ ساعت
           </p>
         </div>
 
-        {/* SELECTED PRODUCT SUMMARY */}
+        {/* SELECTED PRODUCT */}
         {selectedProduct ? (
-          <div className="mb-6 rounded-xl border border-dashed border-border bg-border/5 px-4 py-3 flex items-start justify-between gap-3">
+          <div className="mb-6 rounded-xl border border-dashed border-border bg-accent-soft px-4 py-3 flex items-start justify-between gap-3">
             <div>
-              <p className="font-mono-ui text-[11px] text-muted mb-0.5">
+              <p className="text-[11px] text-muted mb-1">
                 شما انتخاب کرده‌اید
               </p>
-              <p className="text-sm font-semibold">
+              <p className="text-sm font-semibold text-text">
                 {selectedProduct.title}
               </p>
-              <p className="text-xs text-muted mt-0.5">
+              <p className="text-xs text-muted mt-1">
                 {selectedProduct.startingPrice} · {selectedProduct.deliveryTime}
               </p>
             </div>
+
             <button
               type="button"
               onClick={onClearSelection}
-              className="font-mono-ui text-[11px] text-muted hover:text-error underline shrink-0"
+              className="text-[11px] text-muted hover:text-error transition underline"
             >
               حذف
             </button>
           </div>
         ) : (
-          <div className="mb-6 rounded-xl border border-dashed border-border px-4 py-3 text-xs text-muted text-center">
+          <div className="mb-6 rounded-xl border border-border bg-bg px-4 py-3 text-xs text-muted text-center">
             هنوز خدمتی انتخاب نکرده‌اید — می‌توانید از بالا انتخاب کنید یا
-            توضیح خودتان را در پایین بنویسید.
+            توضیح خودتان را وارد کنید.
           </div>
         )}
 
@@ -163,29 +164,29 @@ export default function ContactForm({
             <input
               placeholder="نام و نام خانوادگی *"
               autoComplete="name"
-              className="w-full p-3 rounded-xl border border-border bg-white/60 focus:bg-white outline-none transition-colors"
+              className="w-full p-3 rounded-xl border border-border bg-surface text-text outline-none focus:border-accent transition"
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+              }
             />
             {errors.name && (
-              <p className="text-xs text-error mt-1">
-                {errors.name}
-              </p>
+              <p className="text-xs text-error mt-1">{errors.name}</p>
             )}
           </div>
 
-          {/* BRAND / SHOP NAME */}
+          {/* BRAND */}
           <div>
             <input
-              placeholder="نام پیج یا فروشگاه (اینستاگرام/تلگرام) *"
-              className="w-full p-3 rounded-xl border border-border bg-white/60 focus:bg-white outline-none transition-colors"
+              placeholder="نام پیج یا فروشگاه *"
+              className="w-full p-3 rounded-xl border border-border bg-surface text-text outline-none focus:border-accent transition"
               value={form.brand}
-              onChange={(e) => setForm({ ...form, brand: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, brand: e.target.value })
+              }
             />
             {errors.brand && (
-              <p className="text-xs text-error mt-1">
-                {errors.brand}
-              </p>
+              <p className="text-xs text-error mt-1">{errors.brand}</p>
             )}
           </div>
 
@@ -194,53 +195,54 @@ export default function ContactForm({
             <input
               placeholder="شماره تماس *"
               type="tel"
-              autoComplete="tel"
               dir="ltr"
-              className="w-full p-3 rounded-xl border border-border bg-white/60 focus:bg-white outline-none transition-colors text-right"
+              className="w-full p-3 rounded-xl border border-border bg-surface text-text outline-none focus:border-accent transition"
               value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, phone: e.target.value })
+              }
             />
             {errors.phone && (
-              <p className="text-xs text-error mt-1">
-                {errors.phone}
-              </p>
+              <p className="text-xs text-error mt-1">{errors.phone}</p>
             )}
           </div>
 
-          {/* EMAIL (optional) */}
+          {/* EMAIL */}
           <div>
             <input
               placeholder="ایمیل (اختیاری)"
               type="email"
               dir="ltr"
-              className="w-full p-3 rounded-xl border border-border bg-white/60 focus:bg-white outline-none transition-colors text-right"
+              className="w-full p-3 rounded-xl border border-border bg-surface text-text outline-none focus:border-accent transition"
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
             />
             {errors.email && (
-              <p className="text-xs text-error mt-1">
-                {errors.email}
-              </p>
+              <p className="text-xs text-error mt-1">{errors.email}</p>
             )}
           </div>
 
-          {/* MESSAGE (optional) */}
+          {/* MESSAGE */}
           <textarea
             placeholder="توضیح بیشتر (اختیاری)"
             rows={3}
-            className="w-full p-3 rounded-xl border border-border bg-white/60 focus:bg-white outline-none transition-colors resize-none"
+            className="w-full p-3 rounded-xl border border-border bg-surface text-text outline-none focus:border-accent transition resize-none"
             value={form.message}
-            onChange={(e) => setForm({ ...form, message: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, message: e.target.value })
+            }
           />
 
           {/* SUBMIT */}
           <button
             type="submit"
             disabled={!canSubmit}
-            className={`w-full py-3 rounded-xl font-medium transition-colors ${
+            className={`w-full py-3 rounded-xl font-medium transition ${
               canSubmit
-                ? "bg-primary text-white hover:bg-(--primary-bright)"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                ? "bg-primary text-white hover:opacity-90 shadow-sm"
+                : "bg-border text-muted cursor-not-allowed"
             }`}
           >
             {loading ? "در حال ارسال..." : "تکمیل درخواست"}

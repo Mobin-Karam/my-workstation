@@ -12,11 +12,12 @@ export default function ProductsPage() {
 
   function handleSelect(id: string) {
     setSelectedId(id);
-    // smooth-scroll the contact form into view after state updates
+
     requestAnimationFrame(() => {
-      document
-        .getElementById("contact")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("contact")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     });
   }
 
@@ -25,21 +26,24 @@ export default function ProductsPage() {
       <SiteHeader />
       <ToastHost />
 
-      {/* ---------------- PRODUCT LIST ---------------- */}
+      {/* ---------------- HERO / HEADER ---------------- */}
       <section className="px-5 sm:px-8 pt-14 pb-10">
         <div className="max-w-4xl mx-auto">
-          <p className="font-mono-ui text-xs text-text mb-3 tracking-wide">
+          <p className="text-xs text-muted tracking-wide mb-3">
             خدمات و محصولات
           </p>
-          <h1 className="text-2xl sm:text-4xl font-bold text-text mb-3">
-            یه خدمت رو انتخاب کن، بقیه‌ش با من
+
+          <h1 className="text-2xl sm:text-4xl font-bold text-text leading-[1.3] mb-4">
+            یه خدمت رو انتخاب کن،
+            <span className="text-muted font-normal"> بقیه‌ش با من</span>
           </h1>
+
           <p className="text-muted text-sm sm:text-base leading-7 max-w-2xl mb-10">
-            هر کدوم از این چهار مسیر، بسته به نیاز فروشگاه یا برندت طراحی
-            شدن. روی «انتخاب این خدمت» بزن تا فرم تماس با جزئیات همون خدمت
-            براِت باز بشه.
+            هر کدوم از این مسیرها برای یک مرحله مشخص از رشد کسب‌وکار طراحی شده.
+            روی هر کارت که بزنی، فرم تماس با جزئیات همون سرویس برات آماده میشه.
           </p>
 
+          {/* ---------------- PRODUCTS GRID ---------------- */}
           <div className="grid sm:grid-cols-2 gap-5">
             {products.map((product) => (
               <ProductCard
@@ -53,15 +57,33 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      {/* ---------------- CONTACT FORM ---------------- */}
+      {/* ---------------- CONTACT ---------------- */}
       <section
         id="contact"
-        className="px-5 sm:px-8 py-16 border-t border-border bg-bg"
+        className="px-5 sm:px-8 py-16 border-t border-border bg-surface"
       >
-        <ContactForm
-          selectedProductId={selectedId}
-          onClearSelection={() => setSelectedId(null)}
-        />
+        <div className="max-w-4xl mx-auto">
+          {/* subtle context header */}
+          <div className="mb-10">
+            <p className="text-xs text-muted tracking-wide mb-2">
+              مرحله بعد
+            </p>
+
+            <h2 className="text-xl sm:text-2xl font-bold text-text">
+              اطلاعاتت رو بفرست تا شروع کنیم
+            </h2>
+
+            <p className="text-sm text-muted mt-2 leading-7">
+              سرویس انتخاب‌شده به صورت خودکار داخل فرم قرار می‌گیره، فقط
+              جزئیات رو کامل کن.
+            </p>
+          </div>
+
+          <ContactForm
+            selectedProductId={selectedId}
+            onClearSelection={() => setSelectedId(null)}
+          />
+        </div>
       </section>
     </>
   );

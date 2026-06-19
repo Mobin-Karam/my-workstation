@@ -15,39 +15,50 @@ export default function ToastHost() {
   useEffect(() => {
     const unsub = appEventBus.subscribe((message, type) => {
       const id = Date.now() + Math.random();
+
       setToasts((prev) => [
         ...prev,
         {
           id,
           message,
-          type: type ?? "info", // fallback
+          type: type ?? "info",
         },
       ]);
+
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
       }, 4000);
     });
+
     return unsub;
   }, []);
 
-  if (toasts.length === 0) return null;
+  if (!toasts.length) return null;
 
   return (
-    <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 items-center px-4 w-full max-w-sm">
+    <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-full max-w-sm px-4">
       {toasts.map((t) => (
         <div
           key={t.id}
           role="status"
-          className={`w-full font-mono-ui text-sm rounded-lg px-4 py-3 shadow-lg border text-center animate-[fadeIn_0.2s_ease-out]
+          className={`flex items-start gap-2 rounded-xl px-4 py-3 text-sm shadow-md border backdrop-blur-md transition-all animate-[fadeIn_0.2s_ease-out]
             ${
               t.type === "success"
-                ? "bg-success text-white border-transparent"
+                ? "bg-success/10 text-text border-success/20"
                 : t.type === "error"
-                  ? "bg-error text-white border-transparent"
-                  : "bg-muted text-primary border-primary"
+                  ? "bg-error/10 text-text border-error/20"
+                  : "bg-surface text-text border-border"
             }`}
         >
-          {t.message}
+          {/* ICON */}
+          <div className="mt-0.5">
+            {t.type === "success" && <span className="text-success">✓</span>}
+            {t.type === "error" && <span className="text-error">!</span>}
+            {t.type === "info" && <span className="text-muted">•</span>}
+          </div>
+
+          {/* MESSAGE */}
+          <p className="leading-6">{t.message}</p>
         </div>
       ))}
     </div>
