@@ -66,7 +66,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center sm:justify-start">
               <a
                 href="#about"
-                className="px-6 py-3 rounded-xl text-sm font-medium text-white bg-primary hover:opacity-90 transition shadow-md"
+                className="px-6 py-3 rounded-xl text-sm font-medium text-accent bg-primary hover:opacity-90 transition shadow-md"
               >
                 درباره من ↓
               </a>
