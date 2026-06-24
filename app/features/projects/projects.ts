@@ -16,6 +16,6 @@ export const projects: Project[] = [
     author: "Mobin Karam",
     image: "/projects/p1.png",
     github: "https://github.com/Mobin-Karam/flower-shop",
-    demo: "https://gulify.vercel.app",
+    demo: "https://gulify.ir",
   },
 ]
