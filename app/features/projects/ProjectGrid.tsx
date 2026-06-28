@@ -1,6 +1,6 @@
 "use client";
 
-import { ProjectCard } from "./ProjectCard";
+import ProjectCard from "./ProjectCard";
 import { Project } from "./projects";
 
 export function ProjectGrid({ projects }: { projects: Project[] }) {

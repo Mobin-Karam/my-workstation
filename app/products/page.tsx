@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import ProductCard from "../components/ProductCard";
 import ContactForm from "../components/ContactForm";
 import { products, type Product } from "@/lib/products";
+import ProductCard from "@/components/ProductCard";
 
 export default function ProductsPage() {
   const [selectedId, setSelectedId] = useState<Product["id"] | null>(null);

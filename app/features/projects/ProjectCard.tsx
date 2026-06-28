@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { Project } from "./projects";
 import { ImageLightbox } from "./ImageLightBox";
 
-export function ProjectCard({ project }: { project: Project }) {
+export default function ProjectCard({ project }: { project: Project }) {
   const images = project.images?.length ? project.images : [project.image];
 
   return (
