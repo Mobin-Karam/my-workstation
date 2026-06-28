@@ -23,68 +23,163 @@
   }
 }
 
-/* ---------------- THEME (Tailwind v4 way) ---------------- */
+/* ---------------- THEME ---------------- */
 @theme {
-  /* colors */
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.145 0 0);
+  /* ================= PREMIUM CONVERSION PALETTE ================= */
 
+  /* Background → slightly warm for trust (NOT pure white) */
+  --color-background: oklch(0.985 0.005 90);
+  --color-foreground: oklch(0.14 0.02 250);
+
+  /* Cards → glassy, soft elevation */
   --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.145 0 0);
+  --color-card-foreground: oklch(0.15 0.02 250);
 
   --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.145 0 0);
+  --color-popover-foreground: oklch(0.15 0.02 250);
 
-  --color-primary: oklch(0.205 0 0);
-  --color-primary-foreground: oklch(0.985 0 0);
+  /* PRIMARY → more “business premium” (deep violet, not Instagram neon) */
+  --color-primary: oklch(0.55 0.22 295);
+  --color-primary-foreground: oklch(0.98 0 0);
 
-  --color-secondary: oklch(0.97 0 0);
-  --color-secondary-foreground: oklch(0.205 0 0);
+  /* SECONDARY → soft neutral lavender for UI balance */
+  --color-secondary: oklch(0.96 0.015 270);
+  --color-secondary-foreground: oklch(0.22 0.02 250);
 
-  --color-muted: oklch(0.97 0 0);
-  --color-muted-foreground: oklch(0.556 0 0);
+  /* ACCENT → trust + conversion blue (important for CTAs & links) */
+  --color-accent: oklch(0.62 0.16 220);
+  --color-accent-foreground: oklch(0.98 0 0);
 
-  --color-accent: oklch(0.97 0 0);
-  --color-accent-foreground: oklch(0.205 0 0);
+  /* MUTED → softer UI separation */
+  --color-muted: oklch(0.965 0.01 240);
+  --color-muted-foreground: oklch(0.55 0.02 240);
 
-  --color-destructive: oklch(0.577 0.245 27.325);
+  /* SUCCESS → for “order / contact / confirmation feel” */
+  --color-success: oklch(0.7 0.18 155);
 
-  --color-border: oklch(0.922 0 0);
-  --color-input: oklch(0.922 0 0);
-  --color-ring: oklch(0.708 0 0);
+  /* DESTRUCTIVE → controlled, not harsh red */
+  --color-destructive: oklch(0.62 0.22 25);
 
-  /* radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
+  /* BORDER → softer premium divider */
+  --color-border: oklch(0.92 0.01 250);
+  --color-input: oklch(0.92 0.01 250);
+  --color-ring: oklch(0.65 0.18 285);
+
+  /* ================= PREMIUM GRADIENT SYSTEM ================= */
+
+  /* Hero gradient (trust + luxury) */
+  --gradient-hero: linear-gradient(
+    135deg,
+    oklch(0.65 0.2 295),
+    oklch(0.6 0.18 255),
+    oklch(0.7 0.16 220)
+  );
+
+  /* CTA gradient (conversion-focused) */
+  --gradient-cta: linear-gradient(
+    135deg,
+    oklch(0.6 0.22 295),
+    oklch(0.62 0.18 220)
+  );
+
+  /* Soft background glow */
+  --gradient-glow: radial-gradient(
+    circle at top,
+    oklch(0.6 0.2 295 / 0.08),
+    transparent 60%
+  );
+
+  /* ================= DESIGN TOKENS ================= */
+
+  --radius-sm: 0.35rem;
+  --radius-md: 0.6rem;
+  --radius-lg: 0.9rem;
+  --radius-xl: 1.2rem;
 }
 
-/* ---------------- DARK OVERRIDES ---------------- */
+/* ---------------- DARK MODE ---------------- */
 .dark {
   @theme {
-    --color-background: oklch(0.145 0 0);
-    --color-foreground: oklch(0.985 0 0);
+    /* deeper premium dark (not pure black) */
+    --color-background: oklch(0.14 0.02 260);
+    --color-foreground: oklch(0.96 0.01 250);
 
-    --color-card: oklch(0.205 0 0);
-    --color-card-foreground: oklch(0.985 0 0);
+    --color-card: oklch(0.18 0.02 260);
+    --color-card-foreground: oklch(0.96 0.01 250);
 
-    --color-primary: oklch(0.985 0 0);
-    --color-primary-foreground: oklch(0.205 0 0);
+    --color-primary: oklch(0.72 0.22 295);
+    --color-primary-foreground: oklch(0.12 0.02 260);
 
-    --color-secondary: oklch(0.269 0 0);
-    --color-secondary-foreground: oklch(0.985 0 0);
+    --color-secondary: oklch(0.22 0.02 260);
+    --color-secondary-foreground: oklch(0.95 0.01 250);
 
-    --color-muted: oklch(0.269 0 0);
-    --color-muted-foreground: oklch(0.708 0 0);
+    --color-accent: oklch(0.7 0.18 220);
+    --color-accent-foreground: oklch(0.1 0.02 260);
 
-    --color-accent: oklch(0.269 0 0);
-    --color-accent-foreground: oklch(0.985 0 0);
+    --color-muted: oklch(0.22 0.01 260);
+    --color-muted-foreground: oklch(0.7 0.02 240);
 
-    --color-destructive: oklch(0.704 0.191 22.216);
+    --color-destructive: oklch(0.7 0.22 25);
 
-    --color-border: oklch(1 0 0 / 10%);
-    --color-input: oklch(1 0 0 / 15%);
-    --color-ring: oklch(0.556 0 0);
+    --color-border: oklch(1 0 0 / 8%);
+    --color-input: oklch(1 0 0 / 12%);
+    --color-ring: oklch(0.7 0.18 285);
+  }
+}
+
+/* ================================
+   INSTAGRAM MOVING BORDER COMPONENT
+================================ */
+
+.animated-border {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* the gradient line */
+.animated-border__inner {
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+
+  background: linear-gradient(
+    90deg,
+    #ff3cac,
+    #784ba0,
+    #2b86c5,
+    #ff3cac
+  );
+
+  background-size: 300% 300%;
+  animation: borderMove 6s linear infinite;
+
+  /* cut center so only border shows */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  box-sizing: border-box;
+}
+
+/* smooth movement */
+@keyframes borderMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
+}
+
+@keyframes borderMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
   }
 }

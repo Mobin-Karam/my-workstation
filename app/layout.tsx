@@ -1,174 +1,88 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import Script from "next/script";
-import { cn } from "@/lib/utils";
+import AnimatedBorder from "./components/animation-border";
 import SiteHeader from "./components/SiteHeader";
-import ToastHost from "./components/ToastHost";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mobinkaram.ir"),
-
-  title: {
-    default:
-      "مبین کرم | توسعه‌دهنده وب، طراح محصول دیجیتال و UX/UI Designer در ایران",
-    template: "%s | مبین کرم",
-  },
-
+  title: "مبین کرم | Frontend Developer & Digital Brand Builder",
   description:
-    "مبین کرم، توسعه‌دهنده وب و وب‌اپلیکیشن (Web App)، متخصص PWA و طراح محصول دیجیتال. فریلنسر فعال در ایران و پروژه‌های ریموت. تجربه در طراحی UX/UI، توسعه فرانت‌اند و ساخت محصولات دیجیتال مدرن.",
-
+    "توسعه‌دهنده فرانت‌اند متخصص در Next.js و ساخت برند‌های دیجیتال حرفه‌ای. طراحی سایت، استراتژی کنتنت و رشد اینستاگرام.",
   keywords: [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Frontend Developer",
+    "Digital Marketing",
+    "استراتژی دیجیتال",
+    "طراح وب",
+    "برندینگ دیجیتال",
     "مبین کرم",
-    "Mobin Karam",
-    "توسعه دهنده وب",
-    "Web Developer Iran",
-    "فریلنسر برنامه نویس ایران",
-    "Freelance Developer Iran",
-    "UX Designer",
-    "UI Designer",
-    "Product Designer",
-    "Web App Developer",
-    "ساخت وب اپلیکیشن",
-    "PWA Developer",
-    "Progressive Web App",
-    "طراحی تجربه کاربری",
-    "طراحی رابط کاربری",
-    "Front-end Developer",
-    "Next.js Developer",
-    "React Developer",
-    "Figma Designer",
-    "Quera",
-    "quera programmer",
-    "برنامه نویس ریموت",
-    "remote developer",
-    "freelancer remote work",
   ],
-
   authors: [{ name: "Mobin Karam", url: "https://mobinkaram.ir" }],
   creator: "Mobin Karam",
   publisher: "Mobin Karam",
-
-  alternates: {
-    canonical: "https://mobinkaram.ir",
-    languages: {
-      "fa-IR": "https://mobinkaram.ir/fa",
-      "en-US": "https://mobinkaram.ir/en",
-    },
-  },
-
   robots: {
     index: true,
     follow: true,
     googleBot: {
       index: true,
       follow: true,
+      "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
-      "max-video-preview": -1,
     },
   },
-
   openGraph: {
     type: "website",
-    url: "https://mobinkaram.ir",
-    title: "مبین کرم | توسعه‌دهنده وب و طراح محصول دیجیتال (Iran Freelancer)",
-    description:
-      "توسعه‌دهنده وب، متخصص Web App و PWA و طراح UX/UI. فریلنسر فعال در ایران و پروژه‌های ریموت.",
-    siteName: "Mobin Karam Portfolio",
     locale: "fa_IR",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Mobin Karam - Web Developer & Product Designer",
-      },
-    ],
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "مبین کرم | Web Developer & UX/UI Designer",
-    description:
-      "Web Developer, PWA Builder, UX/UI & Product Designer - Iran Freelancer",
-    images: ["/og-image.jpg"],
-    creator: "@yourhandle",
-  },
-
-  icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
-  },
-
-  manifest: "/site.webmanifest",
-
-  appleWebApp: {
-    capable: true,
-    title: "Mobin Karam",
-    statusBarStyle: "default",
-  },
-
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
+    url: "https://mobinkaram.ir",
+    siteName: "مبین کرم",
+    title: "مبین کرم | Frontend Developer",
+    description: "تبدیل ایده‌های دیجیتال به محصول واقعی و فروش‌ساز",
+    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
 };
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html
-      lang="fa"
-      dir="rtl"
-      className={cn(
-        "h-full",
-        "antialiased",
-        geistSans.variable,
-        geistMono.variable,
-        "font-sans",
-        inter.variable,
-      )}
-    >
-      <head>
-        {/* Google tag (gtag.js) */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-CMRQ9HLNH8"
-          strategy="afterInteractive"
-        />
+    <html lang="fa" dir="rtl" suppressHydrationWarning>
+      <body className="bg-background text-foreground antialiased">
+        {/* 🌈 Animated background frame */}
+        <AnimatedBorder />
 
-        <Script id="gtag-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
+        {/* 📦 APP FRAME (THIS CREATES SPACE AROUND EVERYTHING) */}
+        <div className="relative z-10 min-h-screen p-4 sm:p-6 lg:p-8">
+          
+          {/* INNER SHELL */}
+          <div className="min-h-[calc(100vh-2rem)] sm:min-h-[calc(100vh-3rem)] lg:min-h-[calc(100vh-4rem)] rounded-2xl border border-border bg-background shadow-2xl overflow-hidden flex flex-col">
+            
+            {/* Header */}
+            <SiteHeader />
 
-            gtag('config', 'G-CMRQ9HLNH8', {
-              page_path: window.location.pathname,
-            });
-          `}
-        </Script>
-      </head>
-      <body className="min-h-full flex flex-col">
-        <SiteHeader />
-        <ToastHost />
-        {children}
+            {/* Page Content */}
+            <main id="main-content" className="flex-1">
+              {children}
+            </main>
+
+            {/* Footer */}
+            <footer className="border-t border-border bg-muted/30 py-8 text-center text-sm text-muted-foreground">
+              © 2024 مبین کرم — Next.js Portfolio
+            </footer>
+
+          </div>
+        </div>
       </body>
     </html>
   );

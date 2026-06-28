@@ -1,85 +1,81 @@
-"use client";
-
-import { useMemo, useState } from "react";
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { ProjectsClient } from "./ProjectsClient";
 import { projects } from "@/features/projects/projects";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { ProjectGrid } from "@/features/projects/ProjectGrid";
 
-export default function ProjectsPage() {
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("all");
+// ============================================================================
+// Metadata
+// ============================================================================
 
-  const allStacks = useMemo(
-    () => Array.from(new Set(projects.flatMap((p) => p.stack))),
-    [],
+export const metadata: Metadata = {
+  title: "پروژه‌ها | مبین کرم",
+  description:
+    "مشاهده تمام پروژه‌های من. طراحی سایت، اپلیکیشن وب، و حل‌های دیجیتال با Next.js، React، و TypeScript.",
+  keywords: [
+    "پروژه",
+    "Portfolio",
+    "Next.js",
+    "React",
+    "TypeScript",
+    "مبین کرم",
+  ],
+};
+
+// ============================================================================
+// Page
+// ============================================================================
+
+interface Props {
+  searchParams?: {
+    search?: string;
+    filter?: string;
+  };
+}
+
+export default function ProjectsPage({ searchParams }: Props) {
+  const allStacks = Array.from(new Set(projects.flatMap((p) => p.stack))).sort(
+    (a, b) => a.localeCompare(b),
   );
 
-  const filtered = useMemo(() => {
-    return projects.filter((p) => {
-      const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+  const initialSearch = searchParams?.search ?? "";
+  const initialFilter = searchParams?.filter ?? "all";
 
-      const matchesFilter = filter === "all" || p.stack.includes(filter);
-
-      return matchesSearch && matchesFilter;
-    });
-  }, [search, filter]);
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "پروژه‌های من",
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: projects.slice(0, 10).map((project, index) => ({
+        "@type": "CreativeWork",
+        position: index + 1,
+        name: project.name,
+        description: project.description,
+        keywords: project.stack.join(", "),
+        url: project.link,
+      })),
+    },
+  };
 
   return (
-    <main dir="rtl" className="container mx-auto py-10 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">پروژه‌ها</h1>
-      </div>
+    <>
+      {/* SEO JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
 
-      <Card>
-        <CardContent className="space-y-4 p-4">
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="جستجو..."
-          />
-
-          <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger>
-              <SelectValue placeholder="فیلتر" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">همه</SelectItem>
-              {allStacks.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Button
-            onClick={() => {
-              setSearch("");
-              setFilter("all");
-            }}
-          >
-            پاک‌سازی
-          </Button>
-
-          <div className="text-sm">{filtered.length} پروژه</div>
-        </CardContent>
-      </Card>
-
-      {filtered.length ? (
-        <ProjectGrid projects={filtered} />
-      ) : (
-        <p>پروژه‌ای پیدا نشد</p>
-      )}
-    </main>
+      {/* IMPORTANT: Suspense wrapper fixes build error */}
+      <Suspense fallback={null}>
+        <ProjectsClient
+          projects={projects}
+          allStacks={allStacks}
+          initialSearch={initialSearch}
+          initialFilter={initialFilter}
+        />
+      </Suspense>
+    </>
   );
 }
