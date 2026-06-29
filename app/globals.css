@@ -2,14 +2,13 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 /* ---------------- BASE ---------------- */
 @layer base {
   body {
-    font-family: "Vazirmatn", sans-serif;
+    font-family: "Vazirmatn", serif;
     @apply bg-background text-foreground;
     letter-spacing: -0.2px;
+    line-height: 1.75;
   }
 
   * {
@@ -20,166 +19,52 @@
 
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
 }
 
-/* ---------------- THEME ---------------- */
+/* =========================================================
+   NEWSPAPER STYLE UI (PRINT-INSPIRED, CLEAN, EDITORIAL)
+========================================================= */
 @theme {
-  /* ================= PREMIUM CONVERSION PALETTE ================= */
+  /* ================= SURFACE ================= */
+  --color-background: #f5f2ea; /* aged paper */
+  --color-foreground: #1c1c1c; /* ink black */
 
-  /* Background → slightly warm for trust (NOT pure white) */
-  --color-background: oklch(0.985 0.005 90);
-  --color-foreground: oklch(0.14 0.02 250);
+  --color-card: #ffffff; /* clean paper sheet */
+  --color-card-foreground: #1c1c1c;
 
-  /* Cards → glassy, soft elevation */
-  --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.15 0.02 250);
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1c1c1c;
 
-  --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.15 0.02 250);
+  /* ================= PRIMARY (INK GREEN — VERY SUBTLE) ================= */
+  --color-primary: #2f4f3f;
+  --color-primary-foreground: #ffffff;
 
-  /* PRIMARY → more “business premium” (deep violet, not Instagram neon) */
-  --color-primary: oklch(0.55 0.22 295);
-  --color-primary-foreground: oklch(0.98 0 0);
+  /* ================= ACCENT (NEWSPAPER HIGHLIGHT BLUE, MUTED) ================= */
+  --color-accent: #3f5f7a;
+  --color-accent-foreground: #ffffff;
 
-  /* SECONDARY → soft neutral lavender for UI balance */
-  --color-secondary: oklch(0.96 0.015 270);
-  --color-secondary-foreground: oklch(0.22 0.02 250);
+  /* ================= SECONDARY (PAPER SECTIONS) ================= */
+  --color-secondary: #ebe6db;
+  --color-secondary-foreground: #1c1c1c;
 
-  /* ACCENT → trust + conversion blue (important for CTAs & links) */
-  --color-accent: oklch(0.62 0.16 220);
-  --color-accent-foreground: oklch(0.98 0 0);
+  /* ================= MUTED TEXT ================= */
+  --color-muted: #f0ece3;
+  --color-muted-foreground: #6b6b6b;
 
-  /* MUTED → softer UI separation */
-  --color-muted: oklch(0.965 0.01 240);
-  --color-muted-foreground: oklch(0.55 0.02 240);
+  /* ================= STATES ================= */
+  --color-success: #3f6b4f;
+  --color-destructive: #8b2f2f;
 
-  /* SUCCESS → for “order / contact / confirmation feel” */
-  --color-success: oklch(0.7 0.18 155);
+  /* ================= BORDERS (PRINT LINES) ================= */
+  --color-border: #ded7c9;
+  --color-input: #ded7c9;
+  --color-ring: rgba(47, 79, 63, 0.25);
 
-  /* DESTRUCTIVE → controlled, not harsh red */
-  --color-destructive: oklch(0.62 0.22 25);
-
-  /* BORDER → softer premium divider */
-  --color-border: oklch(0.92 0.01 250);
-  --color-input: oklch(0.92 0.01 250);
-  --color-ring: oklch(0.65 0.18 285);
-
-  /* ================= PREMIUM GRADIENT SYSTEM ================= */
-
-  /* Hero gradient (trust + luxury) */
-  --gradient-hero: linear-gradient(
-    135deg,
-    oklch(0.65 0.2 295),
-    oklch(0.6 0.18 255),
-    oklch(0.7 0.16 220)
-  );
-
-  /* CTA gradient (conversion-focused) */
-  --gradient-cta: linear-gradient(
-    135deg,
-    oklch(0.6 0.22 295),
-    oklch(0.62 0.18 220)
-  );
-
-  /* Soft background glow */
-  --gradient-glow: radial-gradient(
-    circle at top,
-    oklch(0.6 0.2 295 / 0.08),
-    transparent 60%
-  );
-
-  /* ================= DESIGN TOKENS ================= */
-
-  --radius-sm: 0.35rem;
-  --radius-md: 0.6rem;
-  --radius-lg: 0.9rem;
-  --radius-xl: 1.2rem;
-}
-
-/* ---------------- DARK MODE ---------------- */
-.dark {
-  @theme {
-    /* deeper premium dark (not pure black) */
-    --color-background: oklch(0.14 0.02 260);
-    --color-foreground: oklch(0.96 0.01 250);
-
-    --color-card: oklch(0.18 0.02 260);
-    --color-card-foreground: oklch(0.96 0.01 250);
-
-    --color-primary: oklch(0.72 0.22 295);
-    --color-primary-foreground: oklch(0.12 0.02 260);
-
-    --color-secondary: oklch(0.22 0.02 260);
-    --color-secondary-foreground: oklch(0.95 0.01 250);
-
-    --color-accent: oklch(0.7 0.18 220);
-    --color-accent-foreground: oklch(0.1 0.02 260);
-
-    --color-muted: oklch(0.22 0.01 260);
-    --color-muted-foreground: oklch(0.7 0.02 240);
-
-    --color-destructive: oklch(0.7 0.22 25);
-
-    --color-border: oklch(1 0 0 / 8%);
-    --color-input: oklch(1 0 0 / 12%);
-    --color-ring: oklch(0.7 0.18 285);
-  }
-}
-
-/* ================================
-   INSTAGRAM MOVING BORDER COMPONENT
-================================ */
-
-.animated-border {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 50;
-}
-
-/* the gradient line */
-.animated-border__inner {
-  position: absolute;
-  inset: 0;
-  padding: 2px;
-
-  background: linear-gradient(
-    90deg,
-    #ff3cac,
-    #784ba0,
-    #2b86c5,
-    #ff3cac
-  );
-
-  background-size: 300% 300%;
-  animation: borderMove 6s linear infinite;
-
-  /* cut center so only border shows */
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-
-  box-sizing: border-box;
-}
-
-/* smooth movement */
-@keyframes borderMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 300% 50%;
-  }
-}
-
-@keyframes borderMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 300% 50%;
-  }
+  /* ================= TYPOGRAPHY FEEL ================= */
+  --radius-sm: 0.2rem;
+  --radius-md: 0.4rem;
+  --radius-lg: 0.6rem;
+  --radius-xl: 0.8rem;
 }

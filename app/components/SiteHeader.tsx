@@ -1,75 +1,79 @@
 "use client";
 
 import Link from "next/link";
-import {
-  FiHome,
-  FiBox,
-  FiFolder,
-  FiUser,
-  FiGithub,
-  FiLinkedin,
-} from "react-icons/fi";
+import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import { FiHome, FiBox, FiFolder, FiUser } from "react-icons/fi";
+
+const navItems = [
+  { href: "/", icon: FiHome, label: "خانه" },
+  { href: "/aboutme", icon: FiUser, label: "درباره من" },
+  { href: "/products", icon: FiBox, label: "خدمات" },
+  { href: "/projects", icon: FiFolder, label: "پروژه‌ها" },
+];
 
 export default function SiteHeader() {
+  const pathname = usePathname();
+
   return (
-    <>
-      {/* 🍎 APPLE GLASS BOTTOM NAV */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-        <div
-          className="flex items-center gap-5 px-6 py-3 rounded-2xl
-                     bg-white/10 backdrop-blur-xl
-                     border border-white/20
-                     shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
-        >
-          <MobileIcon href="/" icon={<FiHome />} label="خانه" />
-          <MobileIcon href="/aboutme" icon={<FiUser />} label="درباره من" />
-          <MobileIcon href="/products" icon={<FiBox />} label="خدمات" />
-          <MobileIcon href="/projects" icon={<FiFolder />} label="پروژه" />
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 px-3">
+      <div
+        className="
+          relative flex items-center gap-1
+          rounded-2xl
+          bg-black/30 backdrop-blur-xl
+          border border-white/10
+          shadow-[0_10px_40px_rgba(0,0,0,0.35)]
+          px-2 py-2
+        "
+      >
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const active = pathname === item.href;
 
-          {/* divider */}
-          <span className="w-px h-6 bg-white/20" />
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="
+                relative flex flex-col items-center justify-center
+                px-3 py-2 rounded-xl
+                text-white/70 hover:text-white
+                transition
+                min-w-[64px] sm:min-w-[80px]
+              "
+            >
+              {/* ACTIVE BACKGROUND (MOVING PILL) */}
+              {active && (
+                <motion.div
+                  layoutId="active-pill"
+                  className="
+                    absolute inset-0
+                    rounded-xl
+                    bg-white/10
+                    border border-white/10
+                  "
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 35,
+                  }}
+                />
+              )}
 
-          {/* social */}
-          <a
-            href="https://github.com/Mobin-Karam"
-            target="_blank"
-            className="flex flex-col items-center text-white/80 hover:text-white transition"
-          >
-            <FiGithub className="text-xl" />
-            <span className="text-[10px] mt-1">GitHub</span>
-          </a>
+              {/* ICON */}
+              <div className="relative text-xl sm:text-2xl">
+                <Icon />
+              </div>
 
-          <a
-            href="https://www.linkedin.com/in/mobin-karam/"
-            target="_blank"
-            className="flex flex-col items-center text-white/80 hover:text-white transition"
-          >
-            <FiLinkedin className="text-xl" />
-            <span className="text-[10px] mt-1">LinkedIn</span>
-          </a>
-        </div>
+              {/* LABEL */}
+              <span className="relative text-[10px] sm:text-xs mt-1">
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
       </div>
-    </>
-  );
-}
-
-/* 📱 Mobile Icon */
-function MobileIcon({
-  href,
-  icon,
-  label,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex flex-col items-center text-white/80 hover:text-white transition"
-    >
-      <div className="text-xl">{icon}</div>
-      <span className="text-[10px] mt-1">{label}</span>
-    </Link>
+    </div>
   );
 }

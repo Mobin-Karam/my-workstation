@@ -115,7 +115,7 @@ export default function HeroSection({ instagramImageSrc }: HeroSectionProps) {
           {/* CTA */}
           <motion.div variants={itemVariants} className="flex gap-3">
             <Link
-              href="#about"
+              href="/aboutme"
               className="px-6 py-3 bg-primary text-white rounded-xl"
             >
               درباره من

@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { appEventBus } from "@/lib/appEventBus";
-import { getProductById } from "@/lib/products";
 
 /* ---------------- VALIDATION ---------------- */
 const schema = z.object({
-  name: z.string().min(2, "نام الزامی است"),
-  brand: z.string().min(2, "نام پیج یا فروشگاه الزامی است"),
+  name: z.string().min(2, "نام باید حداقل ۲ کاراکتر باشد"),
+  brand: z.string().min(2, "نام برند یا رسانه الزامی است"),
   phone: z.string().min(8, "شماره تماس معتبر وارد کنید"),
   email: z.string().email("ایمیل معتبر نیست").optional().or(z.literal("")),
   message: z.string().optional(),
@@ -17,17 +16,76 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+type SelectedItem = {
+  title: string;
+  subtitle?: string;
+};
+
+type Props = {
+  selectedProductId?: string | null;
+  onClearSelection?: () => void;
+  selectedItem?: SelectedItem | null;
+};
+
+/* ---------------- INPUT ---------------- */
+function Input({
+  value,
+  onChange,
+  placeholder,
+  error,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  error?: string;
+}) {
+  return (
+    <div className="w-full">
+      <div
+        className={`
+          relative border-b transition-all
+          ${error ? "border-destructive" : "border-border"}
+          focus-within:border-primary
+        `}
+      >
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full bg-transparent pt-7 pb-2 px-0 text-foreground outline-none"
+        />
+
+        <label
+          className={`
+            absolute right-0 top-2 text-xs tracking-widest transition
+            pointer-events-none font-medium
+            ${value ? "text-primary -translate-y-1" : "text-muted-foreground"}
+          `}
+        >
+          {placeholder}
+        </label>
+      </div>
+
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="text-xs text-destructive mt-1"
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ---------------- MAIN ---------------- */
 export default function ContactForm({
   selectedProductId,
   onClearSelection,
-}: {
-  selectedProductId?: string | null;
-  onClearSelection?: () => void;
-}) {
-  const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
-  const [shake, setShake] = useState(false);
-
+}: Props) {
   const [form, setForm] = useState<FormData>({
     name: "",
     brand: "",
@@ -37,13 +95,32 @@ export default function ContactForm({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
 
-  const selectedProduct = getProductById(selectedProductId);
+  /* ---------------- MOCK SELECTED ITEM ---------------- */
+  const selectedItem: SelectedItem | null = selectedProductId
+    ? {
+        title: "خدمت انتخاب‌شده",
+        subtitle: `شناسه: ${selectedProductId}`,
+      }
+    : null;
 
-  const progress =
-    (Object.values(form).filter((v) => v?.toString().trim().length > 0).length /
-      4) *
-    100;
+  /* ---------------- PROGRESS ---------------- */
+  const progress = useMemo(() => {
+    const fields = [
+      form.name,
+      form.brand,
+      form.phone,
+      form.email,
+      form.message,
+    ];
+    return (fields.filter(Boolean).length / fields.length) * 100;
+  }, [form]);
+
+  const setField = (key: keyof FormData, value: string) => {
+    setForm((p) => ({ ...p, [key]: value }));
+  };
 
   /* ---------------- VALIDATION ---------------- */
   function validate() {
@@ -52,12 +129,10 @@ export default function ContactForm({
     if (!res.success) {
       const flat = res.error.flatten().fieldErrors;
       const err: Record<string, string> = {};
-      Object.entries(flat).forEach(([k, v]) => (err[k] = v?.[0] || ""));
+      Object.entries(flat).forEach(([k, v]) => {
+        err[k] = v?.[0] || "";
+      });
       setErrors(err);
-
-      setShake(true);
-      setTimeout(() => setShake(false), 400);
-
       return false;
     }
 
@@ -65,6 +140,7 @@ export default function ContactForm({
     return true;
   }
 
+  /* ---------------- SUBMIT ---------------- */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
@@ -72,21 +148,12 @@ export default function ContactForm({
     setLoading(true);
 
     try {
-      const composedMessage = [
-        selectedProduct ? `🎯 خدمت: ${selectedProduct.title}` : "🎯 خدمت: -",
-        `🏪 برند: ${form.brand}`,
-        form.message?.trim(),
-      ]
-        .filter(Boolean)
-        .join("\n");
-
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          message: composedMessage,
-          productId: selectedProduct?.id ?? null,
+          selectedProductId,
         }),
       });
 
@@ -95,111 +162,57 @@ export default function ContactForm({
       if (data.success) {
         setDone(true);
         setForm({ name: "", brand: "", phone: "", email: "", message: "" });
+
         onClearSelection?.();
 
         appEventBus.emit("ارسال موفق ✨", "success");
-      } else {
-        appEventBus.emit("خطا در ارسال", "error");
       }
-    } catch {
-      appEventBus.emit("خطا در ارتباط", "error");
     } finally {
       setLoading(false);
     }
   }
 
-  /* ---------------- INPUT ---------------- */
-  const Input = ({
-    name,
-    placeholder,
-    type = "text",
-  }: {
-    name: keyof FormData;
-    placeholder: string;
-    type?: string;
-  }) => (
-    <div className="relative group">
-      <input
-        type={type}
-        value={form[name]}
-        onChange={(e) => setForm({ ...form, [name]: e.target.value })}
-        className={`
-          w-full p-3 rounded-xl border bg-background
-          transition-all duration-200
-          focus:border-primary focus:shadow-[0_0_0_4px_rgba(120,75,160,0.15)]
-          hover:border-primary/60
-        `}
-      />
-
-      <label
-        className={`
-          absolute right-3 top-3 text-xs transition-all pointer-events-none
-          ${
-            form[name]
-              ? "-translate-y-5 scale-90 text-primary"
-              : "text-muted-foreground"
-          }
-        `}
-      >
-        {placeholder}
-      </label>
-
-      {errors[name] && (
-        <motion.p
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-xs text-destructive mt-1"
-        >
-          {errors[name]}
-        </motion.p>
-      )}
-    </div>
-  );
-
   return (
-    <div className="max-w-xl mx-auto relative">
-      {/* 🌈 BACKGROUND GLOW */}
-      <div className="absolute inset-0 -z-10 blur-3xl opacity-40 bg-[radial-gradient(circle_at_top,rgba(120,75,160,0.25),transparent_60%)]" />
-
-      <motion.div
-        animate={shake ? { x: [-5, 5, -5, 5, 0] } : {}}
-        transition={{ duration: 0.3 }}
-        className="bg-card rounded-2xl border p-6 sm:p-8 shadow-xl relative overflow-hidden"
-      >
+    <div className="max-w-2xl mx-auto font-sans">
+      <motion.div className="bg-card border border-border shadow-sm p-10 space-y-10">
         {/* HEADER */}
-        <div className="text-center mb-4">
-          <h2 className="text-xl font-bold">تکمیل درخواست</h2>
-          <p className="text-xs text-muted-foreground mt-1">
-            پاسخ سریع‌تر از ۲۴ ساعت
+        <div className="text-center border-b border-border pb-6 space-y-2">
+          <h2 className="text-2xl font-bold text-foreground">
+            فرم ارسال درخواست
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            پاسخ توسط تحریریه در کمتر از ۲۴ ساعت
           </p>
         </div>
 
-        {/* PROGRESS BAR */}
-        <div className="h-1 w-full bg-muted rounded-full mb-5 overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-primary via-purple-500 to-accent"
-            animate={{ width: `${progress}%` }}
-            transition={{ ease: "easeOut" }}
-          />
-        </div>
-
-        {/* SELECTED PRODUCT */}
+        {/* SELECTED ITEM (MODERN CARD TAG) */}
         <AnimatePresence>
-          {selectedProduct && (
+          {selectedItem && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="mb-5 p-3 rounded-xl border border-dashed bg-accent/10 flex justify-between items-center"
+              className="
+                border border-border
+                bg-secondary/30
+                rounded-xl
+                p-4 flex items-center justify-between
+              "
             >
               <div>
-                <div className="text-xs text-muted-foreground">انتخاب شده</div>
-                <div className="font-semibold text-sm">
-                  {selectedProduct.title}
+                <div className="text-xs text-muted-foreground uppercase tracking-widest">
+                  انتخاب شده
+                </div>
+                <div className="font-bold text-foreground mt-1">
+                  {selectedItem.title}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {selectedItem.subtitle}
                 </div>
               </div>
 
               <button
+                type="button"
                 onClick={onClearSelection}
                 className="text-xs text-destructive hover:underline"
               >
@@ -209,55 +222,73 @@ export default function ContactForm({
           )}
         </AnimatePresence>
 
+        {/* PROGRESS */}
+        <div className="relative h-[1px] bg-border overflow-hidden">
+          <motion.div
+            className="absolute top-0 right-0 h-[1px] bg-primary"
+            animate={{ width: `${progress}%` }}
+          />
+        </div>
+
+        {/* FORM */}
+        <form className="space-y-8" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <Input
+              value={form.name}
+              onChange={(v) => setField("name", v)}
+              placeholder="نام و نام خانوادگی"
+              error={errors.name}
+            />
+            <Input
+              value={form.brand}
+              onChange={(v) => setField("brand", v)}
+              placeholder="نام برند"
+              error={errors.brand}
+            />
+            <Input
+              value={form.phone}
+              onChange={(v) => setField("phone", v)}
+              placeholder="شماره تماس"
+              error={errors.phone}
+            />
+            <Input
+              value={form.email ?? ""}
+              onChange={(v) => setField("email", v)}
+              placeholder="ایمیل"
+              error={errors.email}
+            />
+          </div>
+
+          <textarea
+            value={form.message}
+            onChange={(e) => setField("message", e.target.value)}
+            rows={6}
+            className="w-full border border-border p-4 bg-secondary/20 text-foreground outline-none resize-none"
+            placeholder="توضیحات..."
+          />
+
+          <div className="flex justify-between items-center border-t border-border pt-6">
+            <p className="text-xs text-muted-foreground">
+              سیستم تحریریه دیجیتال
+            </p>
+
+            <button
+              disabled={loading}
+              className="px-6 py-2 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
+            >
+              {loading ? "در حال ارسال..." : "ارسال"}
+            </button>
+          </div>
+        </form>
+
         {/* SUCCESS */}
         <AnimatePresence>
           {done && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-3 rounded-xl bg-green-500/10 text-green-600 text-center"
-            >
-              درخواست ثبت شد ✓ به‌زودی تماس می‌گیرم
+            <motion.div className="text-center text-success text-sm border-t border-border pt-5">
+              ✓ درخواست با موفقیت ثبت شد
             </motion.div>
           )}
         </AnimatePresence>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input name="name" placeholder="نام و نام خانوادگی *" />
-          <Input name="brand" placeholder="نام پیج *" />
-          <Input name="phone" placeholder="شماره تماس *" type="tel" />
-          <Input name="email" placeholder="ایمیل (اختیاری)" type="email" />
-
-          <textarea
-            placeholder="توضیحات بیشتر"
-            value={form.message}
-            onChange={(e) => setForm({ ...form, message: e.target.value })}
-            className="
-              w-full p-3 rounded-xl border border-border
-              bg-background resize-none outline-none
-              focus:border-primary transition
-              hover:border-primary/60
-            "
-            rows={3}
-          />
-
-          {/* BUTTON */}
-          <motion.button
-            whileHover={{
-              scale: 1.02,
-              boxShadow: "0 10px 30px rgba(120,75,160,0.25)",
-            }}
-            whileTap={{ scale: 0.98 }}
-            disabled={loading}
-            className="
-              w-full py-3 rounded-xl font-medium
-              bg-gradient-to-r from-primary via-purple-500 to-accent
-              text-white relative overflow-hidden
-            "
-          >
-            {loading ? "در حال ارسال..." : "ارسال درخواست ✨"}
-          </motion.button>
-        </form>
       </motion.div>
     </div>
   );
